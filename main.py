@@ -3,19 +3,25 @@ import altair as alt
 import streamlit as st
 import requests
 import pandas as pd
+import base64
 
 # INSERT YOUR API  KEY WHICH YOU PASTED IN YOUR secrets.toml file
 api_key = st.secrets["api_key"]
 
-url = 'http://api.openweathermap.org/data/2.5/weather?q={}&appid={}'
-url_1 = 'https://api.openweathermap.org/data/2.5/forecast?lat={}&lon={}&appid={}'
+url_1 = 'http://api.openweathermap.org/data/2.5/weather?q={}&appid={}'
+url_2 = 'https://api.openweathermap.org/data/2.5/forecast?lat={}&lon={}&appid={}'
+
+@st.cache_data
+def get_img_as_base64(file):
+    with open(file, "rb") as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
 
 # Function for LATEST WEATHER DATA
 def getweather(city):
-    result = requests.get(url.format(city, api_key))
+    result = requests.get(url_1.format(city, api_key))
     if result:
         json = result.json()
-        # st.write(json)
         country = json['sys']['country']
         temp = json['main']['temp'] - 273.15
         temp_feels = json['main']['feels_like'] - 273.15
@@ -32,29 +38,38 @@ def getweather(city):
 
 # Function for HISTORICAL DATA
 def get_forecast_data(lat,lon):
-    res = requests.get(url_1.format(lat, lon, api_key))
-    data = res.json()
-    temp_max = []
-    date = []
-    for main in data["list"]:
-        t = main["main"]["temp_max"]
-        temp_max.append(t - 273.5)
-        d = main["dt_txt"]
-        date.append(d)
-    return data , temp_max, date
+    result = requests.get(url_2.format(lat, lon, api_key))
+    if result:
+        data = result.json()
+        temp_max = []
+        date = []
+        for main in data["list"]:
+            t = main["main"]["temp_max"]
+            temp_max.append(t - 273.5)
+            d = main["dt_txt"]
+            date.append(d)
+        return data , temp_max, date
 
 # Let's write the Application
 
-st.header('Streamlit Weather Report')
-st.markdown('https://openweathermap.org/api')
+st.markdown("<h1 style='text-align: center; color: grey;'>Streamlit Weather Report</h1>", unsafe_allow_html=True)
 
-im1, im2 = st.columns(2)
-with im2:
-    image0 = 'iceland.jpeg'
-    st.image(image0, use_column_width=True, caption='Somewhere in The Netherlands.')
-with im1:
-    image1 = 'open weather map.png'
-    st.image(image1, caption='We will use Open Weather Map API as our Data Resource.', use_column_width=True)
+page_bg_img = f"""
+<style>
+[data-testid="stAppViewContainer"] > .main {{
+background-image: url("https://img.freepik.com/free-vector/blue-pink-halftone-background_53876-99004.jpg?w=2000&t=st=1689276398~exp=1689276998~hmac=f901698af9050e115ddf741ea5ef51e3c9f51745f8d25eb4d59c3d2f90837414");
+background-size: 180%;
+background-position: top left;
+background-repeat: no-repeat;
+background-attachment: local;
+}}
+</style>
+"""
+
+st.markdown(page_bg_img, unsafe_allow_html=True)
+
+image0 = 'snowing.gif'
+st.image(image0, use_column_width=True, caption='Somewhere in The North Pole.')
 
 col1, col2 = st.columns(2)
 
@@ -65,8 +80,8 @@ with col1:
 with col2:
     if city_name:
         res, json = getweather(city_name)
-        st.success('Current: ' + str(round(res[1], 2)))
-        st.info('Feels Like: ' + str(round(res[2], 2)))
+        st.success('Current: ' + str(round(res[1], 2)) + ' C°')
+        st.info('Feels Like: ' + str(round(res[2], 2)) + ' C°')
         st.subheader('Status: ' + res[7])
         web_str = "![Alt Text]" + "(http://openweathermap.org/img/wn/" + str(res[6]) + "@2x.png)"
         st.markdown(web_str)
@@ -88,4 +103,3 @@ if city_name and show_forecast_data:
 
 if city_name and show_map:
     st.map(pd.DataFrame({'lat': [res[5]], 'lon': [res[4]]}, columns=['lat', 'lon']))
-
