@@ -52,14 +52,14 @@ def get_forecast_data(lat,lon):
 
 # Let's write the Application
 
-st.markdown("<h1 style='text-align: center; color: grey;'>Streamlit Weather Report</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; color: gray;'>Streamlit Weather Report</h1>", unsafe_allow_html=True)
 
 page_bg_img = f"""
 <style>
 [data-testid="stAppViewContainer"] > .main {{
-background-image: url("https://img.freepik.com/free-vector/blue-pink-halftone-background_53876-99004.jpg?w=2000&t=st=1689276398~exp=1689276998~hmac=f901698af9050e115ddf741ea5ef51e3c9f51745f8d25eb4d59c3d2f90837414");
-background-size: 180%;
-background-position: top left;
+background-image: url("https://img.freepik.com/free-vector/blue-sky-with-shiny-clouds-background_1017-23279.jpg?w=826&t=st=1689355159~exp=1689355759~hmac=14743d9b91587e62cace25a8a84e39e997e42bb12fb8549b91d56613b7a04758");
+background-size: cover;
+background-position: center center;
 background-repeat: no-repeat;
 background-attachment: local;
 }}
