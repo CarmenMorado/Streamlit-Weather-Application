@@ -82,8 +82,8 @@ elif weather == 'Sunny':
     image2 = 'sunny.gif'
     st.image(image2, use_column_width=True, caption='Somwhere in the World.')
 elif weather == 'Rain':
-    image2 = 'rainy.gif'
-    st.image(image2, use_column_width=True, caption='Somwhere in the World.')
+    image3 = 'rainy.gif'
+    st.image(image3, use_column_width=True, caption='Somwhere in the World.')
 
 col1, col2 = st.columns(2)
 
