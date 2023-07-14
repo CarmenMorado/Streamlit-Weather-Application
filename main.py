@@ -68,8 +68,22 @@ background-attachment: local;
 
 st.markdown(page_bg_img, unsafe_allow_html=True)
 
-image0 = 'snowing.gif'
-st.image(image0, use_column_width=True, caption='Somewhere in The North Pole.')
+weather = st.select_slider(
+    'What type of weather is your favorite?',
+    options=['Sunny','Cloudy','Snow','Rain'])
+
+if weather == 'Snow':
+    image0 = 'snowing.gif'
+    st.image(image0, use_column_width=True, caption='Somewhere in the World.')
+elif weather == 'Cloudy':
+    image1 = 'cloudy.gif'
+    st.image(image1, use_column_width=True, caption='Somwhere in the World.')
+elif weather == 'Sunny':
+    image2 = 'sunny.gif'
+    st.image(image2, use_column_width=True, caption='Somwhere in the World.')
+elif weather == 'Rain':
+    image2 = 'rainy.gif'
+    st.image(image2, use_column_width=True, caption='Somwhere in the World.')
 
 col1, col2 = st.columns(2)
 
