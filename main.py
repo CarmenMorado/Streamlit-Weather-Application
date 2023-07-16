@@ -49,6 +49,20 @@ def get_forecast_data(lat,lon):
             d = main["dt_txt"]
             date.append(d)
         return data , temp_max, date
+    
+# Function for HUMIDITY
+def get_humidity(lat,lon):
+    result = requests.get(url_2.format(lat, lon, api_key))
+    if result:
+        data = result.json()
+        hum = []
+        date = []        
+        for main in data["list"]:
+            h = main["main"]["humidity"]
+            hum.append(h)
+            d = main["dt_txt"]
+            date.append(d)
+        return data , hum , date 
 
 # Let's write the Application
 
@@ -71,7 +85,6 @@ st.markdown(page_bg_img, unsafe_allow_html=True)
 weather = st.select_slider(
     'What type of weather is your favorite?',
     options=['Sunny','Cloudy','Snow','Rain'])
-
 if weather == 'Snow':
     image0 = 'snowing.gif'
     st.image(image0, use_column_width=True, caption='Somewhere in the World.')
@@ -89,7 +102,7 @@ col1, col2 = st.columns(2)
 
 with col1:
     city_name = st.text_input("Enter a city name")
-    show_forecast_data = st.button('5 Day/3 Hour Max Temp Forecast')
+    show_forecast_data = st.button('5 Day/3 Hour Forecast')
     show_map = st.checkbox('Show map')
 with col2:
     if city_name:
@@ -104,16 +117,30 @@ if city_name and show_forecast_data:
     res, json = getweather(city_name)
     data, tempMax, date = get_forecast_data(res[5], res[4])
 
-    "5 Day/3 Hour Forecast (Max Temperature)"
     chart_data = pd.DataFrame({
         'Temperature in Celsius': tempMax,
         'Date': date
     })
-    bar_chart = alt.Chart(chart_data).mark_bar().encode(
+    bar_chart = alt.Chart(chart_data, title = "5 Day/3 Hour Forecast (Max Temperature)").mark_bar().encode(
         y='Temperature in Celsius',
         x='Date',
     )
-    st.altair_chart(bar_chart, use_container_width=True)
+    
+    data, humid, date = get_humidity(res[5], res[4])
+    chart_data2 = pd.DataFrame({
+        'Humidity': humid,
+        'Date': date,
+    })
+    line_chart = alt.Chart(chart_data2, title = "Daily Humidity").mark_line().encode(
+        y='Humidity',
+        x='Date',
+    ).interactive()
+
+    tab1, tab2 = st.tabs(["5 Day/3 Hour Max Temperature Forecast","5 Day/3 Hour Humidity Forecast"])
+    with tab1:
+        st.altair_chart(bar_chart, use_container_width=True)
+    with tab2:
+        st.altair_chart(line_chart, use_container_width=True)
 
 if city_name and show_map:
     st.map(pd.DataFrame({'lat': [res[5]], 'lon': [res[4]]}, columns=['lat', 'lon']))
