@@ -97,51 +97,54 @@ with col1:
     city_name = st.text_input("Enter a city name")
     show_forecast_data = st.button('5 Day/3 Hour Forecast')
     show_map = st.checkbox('Show map')
-with col2:
-    if city_name:
+try:
+    with col2:
+        if city_name:
+            res, json = getweather(city_name)
+            st.markdown('''
+            <style>
+            .element-container {
+                opacity: 1;
+            }
+            </style>
+            ''', unsafe_allow_html=True)
+            st.success('Current: ' + str(round(res[1], 2)) + ' C°')
+            st.info('Feels Like: ' + str(round(res[2], 2)) + ' C°')
+            st.info('Humidity: ' + str(round(res[3], 2)) + ' %')
+            st.subheader('Status: ' + res[7])
+            web_str = "![Alt Text]" + "(http://openweathermap.org/img/wn/" + str(res[6]) + "@2x.png)"
+            st.markdown(web_str)
+
+    if city_name and show_forecast_data:
         res, json = getweather(city_name)
-        st.markdown('''
-        <style>
-        .element-container {
-            opacity: 1;
-        }
-        </style>
-        ''', unsafe_allow_html=True)
-        st.success('Current: ' + str(round(res[1], 2)) + ' C°')
-        st.info('Feels Like: ' + str(round(res[2], 2)) + ' C°')
-        st.info('Humidity: ' + str(round(res[3], 2)) + ' %')
-        st.subheader('Status: ' + res[7])
-        web_str = "![Alt Text]" + "(http://openweathermap.org/img/wn/" + str(res[6]) + "@2x.png)"
-        st.markdown(web_str)
+        data, tempMax, date = get_maxtemp_forecast_data(res[5], res[4])
 
-if city_name and show_forecast_data:
-    res, json = getweather(city_name)
-    data, tempMax, date = get_maxtemp_forecast_data(res[5], res[4])
-
-    chart_data = pd.DataFrame({
-        'Temperature in Celsius': tempMax,
-        'Date': date
-    })
-    bar_chart = alt.Chart(chart_data, title = "Daily Max Temperature").mark_bar().encode(
-        y='Temperature in Celsius',
-        x='Date',
-    )
+        chart_data = pd.DataFrame({
+            'Temperature in Celsius': tempMax,
+            'Date': date
+        })
+        bar_chart = alt.Chart(chart_data, title = "Daily Max Temperature").mark_bar().encode(
+            y='Temperature in Celsius',
+            x='Date',
+        )
     
-    data, humid, date = get_humidity(res[5], res[4])
-    chart_data2 = pd.DataFrame({
-        'Humidity': humid,
-        'Date': date,
-    })
-    line_chart = alt.Chart(chart_data2, title = "Daily Humidity").mark_line().encode(
-        y='Humidity',
-        x='Date',
-    ).interactive()
+        data, humid, date = get_humidity(res[5], res[4])
+        chart_data2 = pd.DataFrame({
+            'Humidity': humid,
+            'Date': date,
+        })
+        line_chart = alt.Chart(chart_data2, title = "Daily Humidity").mark_line().encode(
+            y='Humidity',
+            x='Date',
+        ).interactive()
 
-    tab1, tab2 = st.tabs(["5 Day/3 Hour Max Temperature Forecast","5 Day/3 Hour Humidity Forecast"])
-    with tab1:
-        st.altair_chart(bar_chart, use_container_width=True)
-    with tab2:
-        st.altair_chart(line_chart, use_container_width=True)
+        tab1, tab2 = st.tabs(["5 Day/3 Hour Max Temperature Forecast","5 Day/3 Hour Humidity Forecast"])
+        with tab1:
+            st.altair_chart(bar_chart, use_container_width=True)
+        with tab2:
+            st.altair_chart(line_chart, use_container_width=True)
 
-if city_name and show_map:
-    st.map(pd.DataFrame({'lat': [res[5]], 'lon': [res[4]]}, columns=['lat', 'lon']))
+    if city_name and show_map:
+        st.map(pd.DataFrame({'lat': [res[5]], 'lon': [res[4]]}, columns=['lat', 'lon']))
+except:
+    st.error('There is no city by that name! Please re-enter the city name.')
