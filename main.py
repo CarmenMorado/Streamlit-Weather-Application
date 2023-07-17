@@ -3,19 +3,12 @@ import altair as alt
 import streamlit as st
 import requests
 import pandas as pd
-import base64
 
 # INSERT YOUR API  KEY WHICH YOU PASTED IN YOUR secrets.toml file
 api_key = st.secrets["api_key"]
 
 url_1 = 'http://api.openweathermap.org/data/2.5/weather?q={}&appid={}'
 url_2 = 'https://api.openweathermap.org/data/2.5/forecast?lat={}&lon={}&appid={}'
-
-@st.cache_data
-def get_img_as_base64(file):
-    with open(file, "rb") as f:
-        data = f.read()
-    return base64.b64encode(data).decode()
 
 # Function for LATEST WEATHER DATA
 def getweather(city):
@@ -25,7 +18,7 @@ def getweather(city):
         country = json['sys']['country']
         temp = json['main']['temp'] - 273.15
         temp_feels = json['main']['feels_like'] - 273.15
-        humid = json['main']['humidity'] - 273.15
+        humid = json['main']['humidity']
         icon = json['weather'][0]['icon']
         lon = json['coord']['lon']
         lat = json['coord']['lat']
@@ -36,8 +29,8 @@ def getweather(city):
     else:
         print("error in search !")
 
-# Function for HISTORICAL DATA
-def get_forecast_data(lat,lon):
+# Function for MAX TEMPERATURE
+def get_maxtemp_forecast_data(lat,lon):
     result = requests.get(url_2.format(lat, lon, api_key))
     if result:
         data = result.json()
@@ -71,7 +64,7 @@ st.markdown("<h1 style='text-align: center; color: gray;'>Streamlit Weather Repo
 page_bg_img = f"""
 <style>
 [data-testid="stAppViewContainer"] > .main {{
-background-image: url("https://img.freepik.com/free-vector/blue-sky-with-shiny-clouds-background_1017-23279.jpg?w=826&t=st=1689355159~exp=1689355759~hmac=14743d9b91587e62cace25a8a84e39e997e42bb12fb8549b91d56613b7a04758");
+background-image: url("https://assets.wfcdn.com/im/13048039/resize-h445%5Ecompr-r85/1599/159936424/Tiny+Tots+2+Wallpaper.jpg");
 background-size: cover;
 background-position: center center;
 background-repeat: no-repeat;
@@ -107,21 +100,29 @@ with col1:
 with col2:
     if city_name:
         res, json = getweather(city_name)
+        st.markdown('''
+        <style>
+        .element-container {
+            opacity: 1;
+        }
+        </style>
+        ''', unsafe_allow_html=True)
         st.success('Current: ' + str(round(res[1], 2)) + ' C°')
         st.info('Feels Like: ' + str(round(res[2], 2)) + ' C°')
+        st.info('Humidity: ' + str(round(res[3], 2)) + ' %')
         st.subheader('Status: ' + res[7])
         web_str = "![Alt Text]" + "(http://openweathermap.org/img/wn/" + str(res[6]) + "@2x.png)"
         st.markdown(web_str)
 
 if city_name and show_forecast_data:
     res, json = getweather(city_name)
-    data, tempMax, date = get_forecast_data(res[5], res[4])
+    data, tempMax, date = get_maxtemp_forecast_data(res[5], res[4])
 
     chart_data = pd.DataFrame({
         'Temperature in Celsius': tempMax,
         'Date': date
     })
-    bar_chart = alt.Chart(chart_data, title = "5 Day/3 Hour Forecast (Max Temperature)").mark_bar().encode(
+    bar_chart = alt.Chart(chart_data, title = "Daily Max Temperature").mark_bar().encode(
         y='Temperature in Celsius',
         x='Date',
     )
