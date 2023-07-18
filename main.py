@@ -109,8 +109,8 @@ try:
             </style>
             ''', unsafe_allow_html=True)
             st.success('Current: ' + str(round(res[1], 2)) + ' C°')
-            st.info('Feels Like: ' + str(round(res[2], 2)) + ' C°')
-            st.info('Humidity: ' + str(round(res[3], 2)) + ' %')
+            st.success('Feels Like: ' + str(round(res[2], 2)) + ' C°')
+            st.success('Humidity: ' + str(round(res[3], 2)) + ' %')
             st.subheader('Status: ' + res[7])
             web_str = "![Alt Text]" + "(http://openweathermap.org/img/wn/" + str(res[6]) + "@2x.png)"
             st.markdown(web_str)
@@ -123,28 +123,33 @@ try:
             'Temperature in Celsius': tempMax,
             'Date': date
         })
-        bar_chart = alt.Chart(chart_data, title = "Daily Max Temperature").mark_bar().encode(
+        line_chart = alt.Chart(chart_data, title = "Daily Max Temperature").mark_line().encode(
             y='Temperature in Celsius',
             x='Date',
         )
-    
+
         data, humid, date = get_humidity(res[5], res[4])
         chart_data2 = pd.DataFrame({
             'Humidity': humid,
             'Date': date,
         })
-        line_chart = alt.Chart(chart_data2, title = "Daily Humidity").mark_line().encode(
+        bar_chart = alt.Chart(chart_data2, title = "Daily Humidity").mark_bar().encode(
             y='Humidity',
             x='Date',
         ).interactive()
 
         tab1, tab2 = st.tabs(["5 Day/3 Hour Max Temperature Forecast","5 Day/3 Hour Humidity Forecast"])
         with tab1:
-            st.altair_chart(bar_chart, use_container_width=True)
+            st.altair_chart(line_chart, use_container_width=False)
         with tab2:
-            st.altair_chart(line_chart, use_container_width=True)
+            st.altair_chart(bar_chart, use_container_width=False)
+    elif not city_name and show_forecast_data:
+        st.error('A city name has not been entered! Please enter a city name.')
 
     if city_name and show_map:
         st.map(pd.DataFrame({'lat': [res[5]], 'lon': [res[4]]}, columns=['lat', 'lon']))
+    elif not city_name and show_map:
+        st.error('A city name has not been entered! Please enter a city name.')
+
 except:
     st.error('There is no city by that name! Please re-enter the city name.')
