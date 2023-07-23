@@ -97,6 +97,10 @@ with col1:
     city_name = st.text_input("Enter a city name")
     show_forecast_data = st.button('5 Day/3 Hour Forecast')
     show_map = st.checkbox('Show map')
+    st.radio(
+        "Measurement preference?",
+        ["Metric", "Imperial"],
+    )
 try:
     with col2:
         if city_name:
