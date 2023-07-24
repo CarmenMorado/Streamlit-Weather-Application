@@ -61,17 +61,27 @@ def get_humidity(lat,lon):
 
 st.markdown("<h1 style='text-align: center; color: gray;'>Streamlit Weather Report</h1>", unsafe_allow_html=True)
 
-page_bg_img = f"""
-<style>
-[data-testid="stAppViewContainer"] > .main {{
-background-image: url("https://assets.wfcdn.com/im/13048039/resize-h445%5Ecompr-r85/1599/159936424/Tiny+Tots+2+Wallpaper.jpg");
-background-size: cover;
-background-position: center center;
-background-repeat: no-repeat;
-background-attachment: local;
-}}
-</style>
-"""
+bgcolor = st.color_picker('Customize your background color', '#D2E8F4')
+if bgcolor != '#D2E8F4':
+    page_bg_img = f"""
+    <style>
+    [data-testid="stAppViewContainer"] > .main {{
+    background-color: {bgcolor}
+    }}
+    </style>
+    """
+else:
+    page_bg_img = f"""
+    <style>
+    [data-testid="stAppViewContainer"] > .main {{
+    background-image: url("https://assets.wfcdn.com/im/13048039/resize-h445%5Ecompr-r85/1599/159936424/Tiny+Tots+2+Wallpaper.jpg");
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: local;
+    }}
+    </style>
+    """
 
 st.markdown(page_bg_img, unsafe_allow_html=True)
 
