@@ -155,8 +155,10 @@ try:
         tab1, tab2 = st.tabs(["5 Day/3 Hour Max Temperature Forecast","5 Day/3 Hour Humidity Forecast"])
         with tab1:
             st.altair_chart(line_chart, use_container_width=False)
+            st.dataframe(chart_data[['Date', 'Temperature in Celsius']].set_index(chart_data.columns[1]).style.highlight_max(axis=0), use_container_width=True)
         with tab2:
             st.altair_chart(bar_chart, use_container_width=False)
+            st.dataframe(chart_data2[['Date', 'Humidity']].set_index(chart_data.columns[1]).style.highlight_max(axis=0), use_container_width=True)
     elif not city_name and show_forecast_data:
         st.error('A city name has not been entered! Please enter a city name.')
 
