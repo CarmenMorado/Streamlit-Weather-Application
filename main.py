@@ -36,12 +36,20 @@ def get_maxtemp_forecast_data(lat,lon):
         data = result.json()
         temp_max = []
         date = []
-        for main in data["list"]:
-            t = main["main"]["temp_max"]
-            temp_max.append(t - 273.5)
-            d = main["dt_txt"]
-            date.append(d)
-        return data , temp_max, date
+        if measurements == "Metric":
+            for main in data["list"]:
+                t = main["main"]["temp_max"]
+                temp_max.append(t - 273.5)
+                d = main["dt_txt"]
+                date.append(d)
+            return data , temp_max, date
+        else:
+            for main in data["list"]:
+                t = main["main"]["temp_max"]
+                temp_max.append((t-273.5)*1.8+32)
+                d = main["dt_txt"]
+                date.append(d)
+            return data , temp_max, date
     
 # Function for HUMIDITY
 def get_humidity(lat,lon):
@@ -140,15 +148,24 @@ try:
     if city_name and show_forecast_data:
         res, json = getweather(city_name)
         data, tempMax, date = get_maxtemp_forecast_data(res[5], res[4])
-
-        chart_data = pd.DataFrame({
-            'Temperature in Celsius': tempMax,
-            'Date': date
-        })
-        line_chart = alt.Chart(chart_data, title = "Daily Max Temperature").mark_line().encode(
-            y='Temperature in Celsius',
-            x='Date',
-        )
+        if measurements == "Metric":
+            chart_data = pd.DataFrame({
+                'Temperature in Celsius': tempMax,
+                'Date': date
+            })
+            line_chart = alt.Chart(chart_data, title = "Daily Max Temperature").mark_line().encode(
+                y='Temperature in Celsius',
+                x='Date',
+            )
+        else:
+            chart_data = pd.DataFrame({
+                'Temperature in Farenheit': tempMax,
+                'Date': date
+            })
+            line_chart = alt.Chart(chart_data, title = "Daily Max Temperature").mark_line().encode(
+                y='Temperature in Farenheit',
+                x='Date',
+            )
 
         data, humid, date = get_humidity(res[5], res[4])
         chart_data2 = pd.DataFrame({
@@ -163,7 +180,10 @@ try:
         tab1, tab2 = st.tabs(["5 Day/3 Hour Max Temperature Forecast","5 Day/3 Hour Humidity Forecast"])
         with tab1:
             st.altair_chart(line_chart, use_container_width=False)
-            st.dataframe(chart_data[['Date', 'Temperature in Celsius']].set_index(chart_data.columns[1]).style.highlight_max(axis=0), use_container_width=True)
+            if measurements == "Metric":
+                st.dataframe(chart_data[['Date', 'Temperature in Celsius']].set_index(chart_data.columns[1]).style.highlight_max(axis=0), use_container_width=True)
+            else:
+                st.dataframe(chart_data[['Date', 'Temperature in Farenheit']].set_index(chart_data.columns[1]).style.highlight_max(axis=0), use_container_width=True)
         with tab2:
             st.altair_chart(bar_chart, use_container_width=False)
             st.dataframe(chart_data2[['Date', 'Humidity']].set_index(chart_data.columns[1]).style.highlight_max(axis=0), use_container_width=True)
