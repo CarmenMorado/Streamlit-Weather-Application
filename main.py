@@ -124,15 +124,15 @@ def get_weather_by_time(city, input_time):
 st.markdown("<h1 style='text-align: center; color: dark-gray;'>Weather Report 🌦️</h1>", unsafe_allow_html=True)
 
 
-# bgcolor = st.color_picker('Customize your background color', '#D2E8F4')
-# if bgcolor != '#D2E8F4':
-#     page_bg_img = f"""
-#     <style>
-#     [data-testid="stAppViewContainer"] > .main {{
-#     background-color: {bgcolor}
-#     }}
-#     </style>
-#     """
+bgcolor = st.color_picker('Customize your background color', '#FFFFFF')
+page_bg_img = f"""
+<style>
+[data-testid="stAppViewContainer"] > .main {{
+background-color: {bgcolor}
+}}
+</style>
+"""
+st.markdown(page_bg_img, unsafe_allow_html=True)
 # else:
 #     page_bg_img = f"""
 #     <style>
@@ -145,8 +145,8 @@ st.markdown("<h1 style='text-align: center; color: dark-gray;'>Weather Report �
 #     }}
 #     </style>
 #     """
-#
 # st.markdown(page_bg_img, unsafe_allow_html=True)
+
 
 # weather = st.select_slider(
 #     'What type of weather is your favorite?',
