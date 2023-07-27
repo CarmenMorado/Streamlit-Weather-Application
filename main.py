@@ -133,36 +133,6 @@ background-color: {bgcolor}
 </style>
 """
 st.markdown(page_bg_img, unsafe_allow_html=True)
-# else:
-#     page_bg_img = f"""
-#     <style>
-#     [data-testid="stAppViewContainer"] > .main {{
-#     background-image: url("https://assets.wfcdn.com/im/13048039/resize-h445%5Ecompr-r85/1599/159936424/Tiny+Tots+2+Wallpaper.jpg");
-#     background-size: cover;
-#     background-position: center center;
-#     background-repeat: no-repeat;
-#     background-attachment: local;
-#     }}
-#     </style>
-#     """
-# st.markdown(page_bg_img, unsafe_allow_html=True)
-
-
-# weather = st.select_slider(
-#     'What type of weather is your favorite?',
-#     options=['Sunny', 'Cloudy', 'Snow', 'Rain'])
-# if weather == 'Snow':
-#     image0 = 'snowing.gif'
-#     st.image(image0, use_column_width=True, caption='Somewhere in the World.')
-# elif weather == 'Cloudy':
-#     image1 = 'cloudy.gif'
-#     st.image(image1, use_column_width=True, caption='Somewhere in the World.')
-# elif weather == 'Sunny':
-#     image2 = 'sunny.gif'
-#     st.image(image2, use_column_width=True, caption='Somewhere in the World.')
-# elif weather == 'Rain':
-#     image3 = 'rainy.gif'
-#     st.image(image3, use_column_width=True, caption='Somewhere in the World.')
 
 
 def get_image_base64(image_path):
@@ -285,7 +255,7 @@ try:
             st.markdown(f'**Air Quality:** {air_quality_summary}')
 
             # A button to show detailed air quality data
-            if st.button('Show Detailed Air Quality'):
+            if st.button('Show Detailed Air Quality') and aqi is not None:
                 # Prepare a DataFrame for air quality data
                 air_quality_df = pd.DataFrame(air_quality['components'], index=[0])
                 # Display the DataFrame
